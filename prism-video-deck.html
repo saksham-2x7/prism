@@ -664,6 +664,7 @@
         <div class="controls-panel">
             <button class="btn" id="prevBtn">Prev</button>
             <button class="btn active-btn" id="autoPlayBtn">Auto-Play: ON</button>
+            <button class="btn active-btn" id="voiceBtn">🔊 Voice: ON</button>
             <button class="btn" id="nextBtn">Next</button>
         </div>
     </div>
@@ -677,14 +678,133 @@
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const autoPlayBtn = document.getElementById('autoPlayBtn');
+        const voiceBtn = document.getElementById('voiceBtn');
 
         let currentSlide = 0;
         let totalSlides = slides.length;
         let isAutoPlay = true;
+        let isVoiceOn = true;
         let autoPlayInterval;
-        let slideDuration = 16000; // 16 seconds per slide
         let timerStartTime;
 
+        // ─── NARRATION SCRIPTS ───
+        const narrations = [
+            // Slide 1 — Title
+            `Introducing Prism. Your phone sees code differently. Built for the iQOO Hackathon 2026, Track 06: Developer Tools. By Naman Raghav, Chezhil, and Saksham.`,
+
+            // Slide 2 — The Problem
+            `Here's the problem. Developers spend 30 percent of their time just reading documentation and understanding code. 67 percent use cloud-based AI tools that leak proprietary source code to external servers. And today, zero developer tools actually leverage your phone's unique sensors. That's a massive gap.`,
+
+            // Slide 3 — The Insight
+            `Here's our insight. Every other hackathon team tries to make the phone act like a laptop. We flip the script entirely. Your phone has sensors a laptop doesn't: camera, microphone, and touchscreen. Prism turns these into developer superpowers — all processed one hundred percent on-device.`,
+
+            // Slide 4 — What is PRISM?
+            `So what is Prism? It's a multi-modal, on-device AI developer toolkit. 7 powerful features. 3 AI models. Fully offline. Zero data leaks. Sketch to Code, Voice to Code, Bug Reporter, Notes to Tasks, Code Explainer, Architecture Diagrams, and a Privacy Vault. All running on your phone.`,
+
+            // Slide 5 — Sketch to Code
+            `Feature one: Sketch to Code. Point your phone camera at any hand-drawn wireframe or whiteboard sketch. Prism's vision model identifies buttons, text fields, layouts, and cards. Then it generates production-ready Jetpack Compose code instantly. Point. Snap. Code.`,
+
+            // Slide 6 — Voice to Code
+            `Feature two: Voice to Code. Speak your programming logic in plain English. On-device Whisper transcribes your speech, then Gemma 3n generates working code in Kotlin, Python, JavaScript, Swift, or Go. Perfect for when you're commuting and have a code idea. Speak your logic. Get working code.`,
+
+            // Slide 7 — Bug Reporter
+            `Feature three: Visual Bug Reporter. Take a screenshot of any app bug. Prism's vision model analyzes the UI state and generates a structured bug report — complete with title, severity level, reproduction steps, expected versus actual behavior, and a suggested fix. Screenshots to structured reports, instantly.`,
+
+            // Slide 8 — Handwriting to Tasks
+            `Feature four: Handwriting to Tasks. Photograph your handwritten meeting notes or standup scribbles. On-device OCR extracts the text, and the AI categorizes everything into actionable dev tasks with type labels like bug, feature, or tech debt, along with priority levels and assignees. Standup notes to sprint backlog, with no typing.`,
+
+            // Slide 9 — Code Explainer
+            `Feature five: Smart Code Explainer. Import any code file via the iQOO Office Kit. Prism provides a plain English summary of what the code does, Big-O complexity analysis, code smell detection, and refactoring suggestions. Understand any codebase in seconds.`,
+
+            // Slide 10 — Architecture Diagrams
+            `Feature six: Architecture Diagram Generator. Import your project folder and Prism scans the directory structure, class files, and dependencies. It generates interactive diagrams showing your module dependencies, class relationships, and data flow. Import code. See the big picture.`,
+
+            // Slide 11 — Privacy Vault
+            `Feature seven: Privacy Vault. Everything stays on your device, always. All scanned code, recordings, and generated reports are stored in a Room database encrypted with AES-256. You can set auto-wipe schedules and export password-protected reports. Your data never leaves your device.`,
+
+            // Slide 12 — AI Architecture
+            `Under the hood, Prism runs on a carefully chosen AI model stack. Gemma 3n E2B at 1.2 gigabytes handles vision and text generation for 5 out of 7 features. Gemma 3n E4B at 2.3 gigabytes powers deeper code analysis. Whisper handles speech recognition, and ML Kit handles OCR. All four models total under 4 gigabytes and run entirely on the Snapdragon 8 Elite NPU.`,
+
+            // Slide 13 — NPU Performance
+            `Let's talk performance on the Snapdragon 8 Elite NPU. Sketch scanning completes in about 8 seconds. Voice transcription takes only 3 seconds. Full code analysis runs in approximately 9 seconds. Bug report generation finishes in about 6 seconds. Zero cloud latency. Zero data egress. Everything happens locally on the device.`,
+
+            // Slide 14 — Red/Green Light
+            `Prism is purpose-built for the Red Light, Green Light format. During Red Light phases, all 7 features work completely on the phone using the camera, microphone, and touch sensors. No external dependencies whatsoever. During Green Light phases, you can import files from your laptop via the iQOO Office Kit for heavier analysis. Designed for the rules of the game.`,
+
+            // Slide 15 — Office Kit Integration
+            `The iQOO Office Kit integration is seamless. Bridge your codebase from your laptop to Prism on your phone. The Code Explainer and Architecture Diagram features leverage this bridge to analyze full projects. This alone covers 25 percent of the judging criteria.`,
+
+            // Slide 16 — Tech Stack
+            `Our tech stack is modern and efficient. Kotlin with Jetpack Compose and Material 3 for the UI. MediaPipe LLM Inference and LiteRT-LM for AI runtime. Gemma 3n quantized to INT4 running on the Snapdragon NPU. CameraX and ML Kit for camera and OCR. Room Database with AES-256 for encrypted storage. And Firebase Auth for optional cloud sync.`,
+
+            // Slide 17 — Long-Term Vision
+            `Prism has serious long-term potential. In Q4 2026, we envision a plugin ecosystem for community prompt templates. In Q1 2027, peer-to-peer encrypted team sync. In Q2 2027, Android Studio and VS Code extensions. And in Q3 2027, multi-language voice support for Hindi, Tamil, and Telugu. Prism grows with the developer community.`,
+
+            // Slide 18 — Why PRISM Wins
+            `Let's look at the judging criteria. Problem Clarity and Relevance — check. Developers need privacy-first AI tools. Novelty and Originality — check. No one is building a multi-modal phone-sensor-based developer toolkit. AI-First Thinking — check. Four AI models power every feature. iQOO Device Fit — check. Camera, mic, touch, Office Kit — we use everything. Feasibility and Impact — check. Working prototype with proven models.`,
+
+            // Slide 19 — The Team
+            `Meet the team. Naman Raghav, our Android Lead and debugging expert. Chezhil, our AI and ML specialist who handles complex problem solving. And Saksham, our Product Lead covering UI, UX, and prompt engineering. Three builders. One mission.`,
+
+            // Slide 20 — Closing
+            `Prism. Your code. Your phone. Your vision. One hundred percent on-device. Zero cloud. Zero leaks. Check us out on GitHub at github dot com slash saksham-2x7 slash prism. Thank you for watching.`
+        ];
+
+        // ─── VOICE ENGINE ───
+        const synth = window.speechSynthesis;
+        let currentUtterance = null;
+        let voicesReady = false;
+        let selectedVoice = null;
+
+        function loadVoices() {
+            const voices = synth.getVoices();
+            if (voices.length === 0) return;
+            voicesReady = true;
+            // Prefer a clear English voice
+            const preferred = [
+                'Samantha', 'Daniel', 'Karen', 'Google UK English Female',
+                'Google UK English Male', 'Google US English', 'Alex',
+                'Microsoft Zira', 'Microsoft David'
+            ];
+            for (const name of preferred) {
+                const match = voices.find(v => v.name.includes(name));
+                if (match) { selectedVoice = match; return; }
+            }
+            // Fallback: first English voice
+            selectedVoice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+        }
+
+        synth.onvoiceschanged = loadVoices;
+        loadVoices();
+
+        function speak(text) {
+            synth.cancel(); // stop any current speech
+            if (!isVoiceOn || !text) return;
+
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.rate = 0.95;
+            currentUtterance.pitch = 1.0;
+            currentUtterance.volume = 1.0;
+            if (selectedVoice) currentUtterance.voice = selectedVoice;
+
+            // Dynamic slide duration: match narration length
+            currentUtterance.onend = () => {
+                if (isAutoPlay) {
+                    // Wait 2 seconds after narration ends, then advance
+                    setTimeout(() => {
+                        if (isAutoPlay) nextSlide();
+                    }, 2000);
+                }
+            };
+
+            synth.speak(currentUtterance);
+        }
+
+        function stopSpeaking() {
+            synth.cancel();
+        }
+
+        // ─── SLIDE SYSTEM ───
         // Initialize dots
         slides.forEach((_, index) => {
             const dot = document.createElement('div');
@@ -705,12 +825,19 @@
         }
 
         function goToSlide(index) {
+            stopSpeaking();
             slides[currentSlide].classList.remove('active');
             currentSlide = (index + totalSlides) % totalSlides;
             slides[currentSlide].classList.add('active');
             updateHUD();
             
-            if (isAutoPlay) {
+            // Narrate the new slide
+            if (isVoiceOn) {
+                setTimeout(() => speak(narrations[currentSlide]), 600);
+            }
+
+            // If autoplay is on but voice is off, use timer fallback
+            if (isAutoPlay && !isVoiceOn) {
                 resetTimer();
             }
         }
@@ -723,17 +850,41 @@
             if (isAutoPlay) {
                 autoPlayBtn.classList.add('active-btn');
                 autoPlayBtn.textContent = 'Auto-Play: ON';
-                resetTimer();
+                // If voice is on, speak current slide to kickstart
+                if (isVoiceOn) {
+                    speak(narrations[currentSlide]);
+                } else {
+                    resetTimer();
+                }
             } else {
                 autoPlayBtn.classList.remove('active-btn');
                 autoPlayBtn.textContent = 'Auto-Play: OFF';
+                stopSpeaking();
                 clearInterval(autoPlayInterval);
                 slideTimer.style.width = '0%';
             }
         }
 
+        function toggleVoice() {
+            isVoiceOn = !isVoiceOn;
+            if (isVoiceOn) {
+                voiceBtn.classList.add('active-btn');
+                voiceBtn.textContent = '🔊 Voice: ON';
+                // Start speaking current slide
+                speak(narrations[currentSlide]);
+            } else {
+                voiceBtn.classList.remove('active-btn');
+                voiceBtn.textContent = '🔇 Voice: OFF';
+                stopSpeaking();
+                // If autoplay is on, switch to timer-based advancement
+                if (isAutoPlay) resetTimer();
+            }
+        }
+
+        // Timer fallback for when voice is off
+        let slideDuration = 16000;
         function updateTimerBar() {
-            if (!isAutoPlay) return;
+            if (!isAutoPlay || isVoiceOn) return;
             const elapsed = Date.now() - timerStartTime;
             const percentage = (elapsed / slideDuration) * 100;
             slideTimer.style.width = `${Math.min(percentage, 100)}%`;
@@ -754,21 +905,27 @@
         prevBtn.addEventListener('click', prevSlide);
         nextBtn.addEventListener('click', nextSlide);
         autoPlayBtn.addEventListener('click', toggleAutoPlay);
+        voiceBtn.addEventListener('click', toggleVoice);
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') {
-                nextSlide();
-                isAutoPlay = false; toggleAutoPlay(); toggleAutoPlay(); // force manual override pause
-            } else if (e.key === 'ArrowLeft') {
-                prevSlide();
-                isAutoPlay = false; toggleAutoPlay(); toggleAutoPlay(); 
-            }
+            if (e.key === 'ArrowRight') nextSlide();
+            else if (e.key === 'ArrowLeft') prevSlide();
+            else if (e.key === 'v' || e.key === 'V') toggleVoice();
+            else if (e.key === ' ') { e.preventDefault(); toggleAutoPlay(); }
         });
 
         // Init
         updateHUD();
-        if (isAutoPlay) resetTimer();
+        // Start narration after a brief delay for voices to load
+        setTimeout(() => {
+            if (isVoiceOn && isAutoPlay) {
+                speak(narrations[0]);
+            } else if (isAutoPlay) {
+                resetTimer();
+            }
+        }, 1500);
 
     </script>
 </body>
 </html>
+
