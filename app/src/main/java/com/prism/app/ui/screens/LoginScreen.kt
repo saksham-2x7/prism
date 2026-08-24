@@ -54,7 +54,7 @@ fun LoginScreen(navController: NavController) {
         )
 
         Text(
-            text = "PRISM",
+            text = "Neuron",
             fontSize = 36.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,

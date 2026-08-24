@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Prism</string>
-    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID</string>
+    <string name="app_name">Neuron</string>
+    <string name="default_web_client_id">123456789000-demo.apps.googleusercontent.com</string>
 </resources>

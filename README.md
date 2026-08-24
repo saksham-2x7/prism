@@ -1,10 +1,10 @@
-# 🔱 PRISM — Multi-Modal On-Device AI Developer Toolkit
+# 🔱 Neuron — Multi-Modal On-Device AI Developer Toolkit
 
 > **iQOO Hackathon 2026 | Track 06: Developer Tools**
 
 *Your phone sees code differently.*
 
-PRISM turns your phone's unique sensors — **camera, microphone, touchscreen** — into developer superpowers. Every feature runs 100% on-device via the Snapdragon 8 Elite NPU. Zero cloud. Zero leaks.
+Neuron turns your phone's unique sensors — **camera, microphone, touchscreen** — into developer superpowers. Every feature runs 100% on-device via the Snapdragon 8 Elite NPU. Zero cloud. Zero leaks.
 
 ## ✨ Features
 
@@ -54,7 +54,7 @@ PRISM turns your phone's unique sensors — **camera, microphone, touchscreen** 
 ```
 app/src/main/java/com/prism/app/
 ├── MainActivity.kt
-├── PrismApp.kt
+├── NeuronApp.kt
 ├── auth/
 │   └── GoogleAuthManager.kt
 ├── data/
@@ -64,9 +64,9 @@ app/src/main/java/com/prism/app/
 │   ├── components/
 │   │   ├── CodeBlock.kt
 │   │   ├── FeatureCard.kt
-│   │   └── PrismTopBar.kt
+│   │   └── NeuronTopBar.kt
 │   ├── navigation/
-│   │   └── PrismNavHost.kt
+│   │   └── NeuronNavHost.kt
 │   ├── screens/
 │   │   ├── LoginScreen.kt
 │   │   ├── HomeScreen.kt
