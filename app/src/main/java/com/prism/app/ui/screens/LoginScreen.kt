@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -33,41 +34,47 @@ fun NeuralBackground(modifier: Modifier = Modifier) {
     val screenWidth = with(density) { configuration.screenWidthDp.dp.toPx() }
     val screenHeight = with(density) { configuration.screenHeightDp.dp.toPx() }
 
-    // Initialize nodes only once
+    // Initialize nodes
     val nodes = remember {
         List(40) {
             NeuronNode(
                 x = Random.nextFloat() * screenWidth,
                 y = Random.nextFloat() * screenHeight,
-                vx = (Random.nextFloat() - 0.5f) * 1.5f,
-                vy = (Random.nextFloat() - 0.5f) * 1.5f,
+                vx = (Random.nextFloat() - 0.5f) * 2f,
+                vy = (Random.nextFloat() - 0.5f) * 2f,
                 radius = Random.nextFloat() * 4f + 2f
             )
         }
     }
 
-    // Trigger recomposition on frame updates
-    val infiniteTransition = rememberInfiniteTransition(label = "tick")
-    val time by infiniteTransition.animateFloat(
-        initialValue = 0f, targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(1000, easing = LinearEasing)),
-        label = "time"
-    )
+    // Use a state to force recomposition/redraw
+    var frameTime by remember { mutableLongStateOf(0L) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            withFrameNanos { time ->
+                frameTime = time
+                // Update positions
+                nodes.forEach { node ->
+                    node.x += node.vx
+                    node.y += node.vy
+
+                    // Bounce off walls
+                    if (node.x < 0) { node.x = 0f; node.vx *= -1 }
+                    if (node.x > screenWidth) { node.x = screenWidth; node.vx *= -1 }
+                    if (node.y < 0) { node.y = 0f; node.vy *= -1 }
+                    if (node.y > screenHeight) { node.y = screenHeight; node.vy *= -1 }
+                }
+            }
+        }
+    }
 
     Canvas(modifier = modifier.fillMaxSize().background(DarkBackground)) {
-        // Read time to force recomposition
-        time.hashCode()
-
-        // Update positions
-        nodes.forEach { node ->
-            node.x += node.vx
-            node.y += node.vy
-
-            // Bounce off walls
-            if (node.x < 0 || node.x > size.width) node.vx *= -1
-            if (node.y < 0 || node.y > size.height) node.vy *= -1
+        // Read frameTime to force redraw on every frame
+        frameTime.hashCode()
             
-            // Draw Node
+        // Draw Nodes
+        nodes.forEach { node ->
             drawCircle(color = AccentCyan.copy(alpha = 0.8f), radius = node.radius, center = Offset(node.x, node.y))
         }
 
