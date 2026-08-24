@@ -47,9 +47,9 @@ fun HomeScreen(navController: NavController) {
         Feature("📸", "Sketch to Code", "Camera → Compose code", AccentCyan, "sketch_to_code"),
         Feature("🎙️", "Voice to Code", "Speak → Working code", AccentViolet, "voice_to_code"),
         Feature("🐛", "Bug Reporter", "Screenshot → Bug report", ErrorRed, "bug_reporter"),
-        Feature("📝", "Notes to Tasks", "Handwriting → Dev tasks", WarningAmber, "notes_to_tasks"),
+        Feature("📝", "Notes to Tasks", "Handwriting → Dev tasks", WarningAmber, "handwriting_to_tasks"),
         Feature("🔍", "Code Explainer", "Import → Understand", SuccessGreen, "code_explainer"),
-        Feature("🏗️", "Architecture", "Code → Diagrams", AccentCyan, "architecture"),
+        Feature("🏗️", "Architecture", "Code → Diagrams", AccentCyan, "architecture_diagram"),
         Feature("🔐", "Privacy Vault", "Encrypted history", AccentViolet, "privacy_vault")
     )
 
