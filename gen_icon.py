@@ -13,8 +13,8 @@ def generate_icon(size, out_path, text="Neuron"):
         "/Library/Fonts/Arial.ttf"
     ]
     font = None
-    # Calculate font size: roughly 25% of image width for 'Neuron' to fit
-    font_size = int(size * 0.25)
+    # Calculate font size: roughly 16% of image width for 'Neuron' to fit within adaptive icon safe zone (which is a 66% circle)
+    font_size = int(size * 0.16)
     
     for fp in font_paths:
         if os.path.exists(fp):
