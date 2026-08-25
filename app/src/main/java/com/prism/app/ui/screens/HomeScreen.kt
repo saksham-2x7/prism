@@ -88,10 +88,10 @@ fun HomeScreen(navController: androidx.navigation.NavController) {
 
                 // Grid
                 val features = listOf(
-                    Triple("Analytics", "Data insights", "📊"),
-                    Triple("Network", "Global reach", "🌐"),
-                    Triple("Security", "Zero trust", "🛡️"),
-                    Triple("AI Core", "Neural nets", "🧠")
+                    Triple("Code Explainer", "Analyze logic", "🔍") to "code_explainer",
+                    Triple("Architecture", "Draw diagram", "🏗️") to "architecture_diagram",
+                    Triple("Voice to Code", "Speak it", "🎙️") to "voice_to_code",
+                    Triple("Privacy Vault", "Zero trust", "🔐") to "privacy_vault"
                 )
 
                 LazyVerticalGrid(
@@ -101,12 +101,12 @@ fun HomeScreen(navController: androidx.navigation.NavController) {
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.weight(1f)
                 ) {
-                    items(features) { feature ->
+                    items(features) { (feature, route) ->
                         GlassCard(
                             title = feature.first,
                             subtitle = feature.second,
                             icon = feature.third,
-                            onClick = { /* TODO */ },
+                            onClick = { navController.navigate(route) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(160.dp)
@@ -151,19 +151,7 @@ fun AnimatedMeshBackground() {
         label = "angle2"
     )
 
-    Canvas(
-        modifier = Modifier
-            .fillMaxSize()
-            .graphicsLayer {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    renderEffect = RenderEffect.createBlurEffect(
-                        150f,
-                        150f,
-                        Shader.TileMode.CLAMP
-                    ).asComposeRenderEffect()
-                }
-            }
-    ) {
+    Canvas(modifier = Modifier.fillMaxSize()) {
         val width = size.width
         val height = size.height
         
@@ -215,15 +203,6 @@ fun GlassBottomBar(modifier: Modifier = Modifier) {
             .height(64.dp)
             .clip(shape)
             .border(1.dp, borderBrush, shape)
-            .graphicsLayer {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    renderEffect = RenderEffect.createBlurEffect(
-                        30f,
-                        30f,
-                        Shader.TileMode.DECAL
-                    ).asComposeRenderEffect()
-                }
-            }
             .background(Color.White.copy(alpha = 0.1f)),
         contentAlignment = Alignment.Center
     ) {
