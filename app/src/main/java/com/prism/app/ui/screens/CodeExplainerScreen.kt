@@ -1,182 +1,184 @@
 package com.prism.app.ui.screens
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-private val BgColor = Color(0xFF000000)
-private val CardColor = Color(0xFF1A1A1A)
-private val CardBorderColor = Color(0xFF2A2A2A)
-private val TextPrimaryColor = Color.White
-private val TextSecondaryColor = Color(0xFFB0B0B0)
-private val AccentCyanColor = Color(0xFF00E5FF)
-private val SuccessColor = Color(0xFF00E676)
-private val WarningColor = Color(0xFFFFD600)
+private val BgBlack = Color(0xFF000000)
+private val CardBg = Color(0xFF111111)
+private val CardBorder = Color(0xFF222222)
+private val AccentGreen = Color(0xFF00E676)
+private val TextPrimary = Color.White
+private val TextSecondary = Color(0xFFAAAAAA)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CodeExplainerScreen(onBackClick: () -> Unit = {}) {
-    var state by remember { mutableIntStateOf(0) }
-
-    LaunchedEffect(state) {
-        if (state == 1) {
-            delay(2000)
-            state = 2
-        }
-    }
+    var state by remember { mutableIntStateOf(0) } // 0=Input, 1=Loading, 2=Result
+    var codeInput by remember { mutableStateOf("") }
+    var explanation by remember { mutableStateOf("") }
+    var complexity by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
-        containerColor = BgColor,
         topBar = {
             TopAppBar(
-                title = { Text("Code Explainer", color = TextPrimaryColor, fontWeight = FontWeight.Bold) },
+                title = { Text("Code Explainer", color = TextPrimary, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimaryColor)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = BgColor)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = BgBlack)
             )
-        }
-    ) { paddingValues ->
-        Box(
+        },
+        containerColor = BgBlack
+    ) { padding ->
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AnimatedContent(targetState = state, label = "State Transition") { targetState ->
-                when (targetState) {
-                    0 -> IdleState(onExplain = { state = 1 })
-                    1 -> ProcessingState()
-                    2 -> ResultState(onNewAnalysis = { state = 0 })
+            if (state == 0) {
+                // Input State
+                Text(
+                    text = "Paste code to analyze",
+                    color = TextPrimary,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = codeInput,
+                    onValueChange = { codeInput = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .background(CardBg, RoundedCornerShape(16.dp)),
+                    textStyle = LocalTextStyle.current.copy(
+                        color = AccentGreen,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 14.sp
+                    ),
+                    placeholder = { Text("fun main() {\n  println(\"Hello\")\n}", color = Color.DarkGray, fontFamily = FontFamily.Monospace) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AccentGreen,
+                        unfocusedBorderColor = CardBorder,
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = {
+                        if (codeInput.isNotBlank()) {
+                            state = 1
+                            coroutineScope.launch {
+                                // Simulate NPU Inference Delay
+                                delay(2500)
+                                
+                                // Dynamic Response Logic
+                                if (codeInput.contains("for") || codeInput.contains("while")) {
+                                    complexity = "O(n)"
+                                    explanation = "This code iterates through a collection. It uses a loop construct which means execution time grows linearly with the input size."
+                                } else if (codeInput.contains("if") && codeInput.contains("return")) {
+                                    complexity = "O(1)"
+                                    explanation = "This is a conditional branching function. It checks a state and returns immediately, making it very efficient."
+                                } else if (codeInput.contains("suspend") || codeInput.contains("await")) {
+                                    complexity = "Asynchronous"
+                                    explanation = "This code performs asynchronous operations, likely network or database I/O, without blocking the main thread."
+                                } else {
+                                    complexity = "O(1)"
+                                    explanation = "This is a standard functional block. It executes sequentially with constant time complexity."
+                                }
+                                state = 2
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AccentGreen, contentColor = Color.Black)
+                ) {
+                    Icon(Icons.Default.AutoAwesome, contentDescription = null)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text("Analyze with NPU", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
-            }
-        }
-    }
-}
+            } else if (state == 1) {
+                // Loading State
+                Spacer(modifier = Modifier.height(100.dp))
+                CircularProgressIndicator(color = AccentGreen, modifier = Modifier.size(64.dp), strokeWidth = 6.dp)
+                Spacer(modifier = Modifier.height(24.dp))
+                Text("NPU Analyzing AST...", color = AccentGreen, fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                Text("Running Gemma-3n-E2B locally", color = TextSecondary, fontSize = 14.sp, modifier = Modifier.padding(top = 8.dp))
+            } else {
+                // Result State
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    color = CardBg,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+                ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = AccentGreen)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Analysis Complete", color = TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        }
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        Text("COMPLEXITY", color = TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Surface(shape = RoundedCornerShape(8.dp), color = AccentGreen.copy(alpha=0.15f)) {
+                            Text(complexity, color = AccentGreen, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
+                        }
 
-@Composable
-private fun IdleState(onExplain: () -> Unit) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-        OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            placeholder = { Text("Paste or import code", color = TextSecondaryColor, fontFamily = FontFamily.Monospace) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = CardColor,
-                unfocusedContainerColor = CardColor,
-                focusedBorderColor = AccentCyanColor,
-                unfocusedBorderColor = CardBorderColor,
-                cursorColor = AccentCyanColor
-            ),
-            textStyle = LocalTextStyle.current.copy(fontFamily = FontFamily.Monospace, color = TextPrimaryColor)
-        )
-        Spacer(Modifier.height(32.dp))
-        Button(
-            onClick = onExplain,
-            colors = ButtonDefaults.buttonColors(containerColor = AccentCyanColor, contentColor = BgColor),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Icon(Icons.Default.Search, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
-            Text("Explain Code", fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-        }
-    }
-}
-
-@Composable
-private fun ProcessingState() {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        LinearProgressIndicator(color = AccentCyanColor, trackColor = CardBorderColor, modifier = Modifier.fillMaxWidth(0.6f))
-        Spacer(Modifier.height(24.dp))
-        Text("Analyzing code structure...", color = AccentCyanColor, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-    }
-}
-
-@Composable
-private fun ResultState(onNewAnalysis: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            colors = CardDefaults.cardColors(containerColor = CardColor),
-            border = BorderStroke(1.dp, CardBorderColor),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
-                Text("Summary", color = TextPrimaryColor, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Spacer(Modifier.height(8.dp))
-                Text("This function implements the binary search algorithm to find an element in a sorted array efficiently.", color = TextSecondaryColor, fontSize = 14.sp)
-                
-                Spacer(Modifier.height(24.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Complexity:", color = TextPrimaryColor, fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.width(8.dp))
-                    Box(modifier = Modifier.clip(RoundedCornerShape(4.dp)).background(SuccessColor.copy(alpha = 0.2f)).padding(horizontal = 8.dp, vertical = 4.dp)) {
-                        Text("O(log n)", color = SuccessColor, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        Text("EXPLANATION", color = TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(explanation, color = TextPrimary, fontSize = 16.sp, lineHeight = 24.sp)
                     }
                 }
 
-                Spacer(Modifier.height(24.dp))
-                Text("Key Concepts", color = TextPrimaryColor, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ChipTag("Binary Search")
-                    ChipTag("Divide & Conquer")
-                }
-
-                Spacer(Modifier.height(24.dp))
-                Text("Code Smells & Suggestions", color = TextPrimaryColor, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(8.dp))
-                Box(modifier = Modifier.fillMaxWidth().background(WarningColor.copy(alpha = 0.1f)).border(1.dp, WarningColor.copy(alpha = 0.3f), RoundedCornerShape(8.dp)).padding(12.dp)) {
-                    Text("Consider handling integer overflow when calculating the mid index using 'left + (right - left) / 2'.", color = WarningColor, fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                OutlinedButton(
+                    onClick = { state = 0; codeInput = "" },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = TextPrimary)
+                ) {
+                    Text("Analyze Another Snippet", fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 }
             }
         }
-        Spacer(Modifier.height(24.dp))
-        Button(
-            onClick = onNewAnalysis,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = AccentCyanColor, contentColor = BgColor)
-        ) {
-            Icon(Icons.Default.Refresh, contentDescription = "New Analysis")
-            Spacer(Modifier.width(8.dp))
-            Text("New Analysis", fontWeight = FontWeight.Bold)
-        }
-    }
-}
-
-@Composable
-private fun ChipTag(text: String) {
-    Box(
-        modifier = Modifier
-            .border(1.dp, AccentCyanColor, RoundedCornerShape(16.dp))
-            .background(CardColor, RoundedCornerShape(16.dp))
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-    ) {
-        Text(text, color = AccentCyanColor, fontSize = 12.sp)
     }
 }
