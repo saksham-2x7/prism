@@ -30,7 +30,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.History
@@ -205,7 +207,7 @@ fun GlassBottomBar(modifier: Modifier = Modifier, navController: androidx.naviga
 
     Box(
         modifier = modifier
-            .width(280.dp)
+            .width(340.dp)
             .height(64.dp)
             .clip(shape)
             .border(1.dp, borderBrush, shape)
@@ -219,54 +221,42 @@ fun GlassBottomBar(modifier: Modifier = Modifier, navController: androidx.naviga
         ) {
             IconButton(
                 onClick = { navController.navigate("home") },
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
+                modifier = Modifier.size(48.dp).clip(CircleShape)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Home",
-                    tint = Color(0xFF00E5FF)
-                )
+                Icon(Icons.Default.Home, contentDescription = "Home", tint = Color.White)
             }
             
             IconButton(
-                onClick = { navController.navigate("voice_to_code") },
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
+                onClick = { navController.navigate("bug_reporter") },
+                modifier = Modifier.size(48.dp).clip(CircleShape)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Mic,
-                    contentDescription = "Voice",
-                    tint = Color.White
-                )
+                Icon(Icons.Default.BugReport, contentDescription = "Debugger", tint = Color.White)
+            }
+            
+            // Glowing Neural Core Center Button
+            IconButton(
+                onClick = { navController.navigate("npu_monitor") },
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF00E5FF).copy(alpha = 0.2f))
+                    .border(1.dp, Color(0xFF00E5FF), CircleShape)
+            ) {
+                Icon(Icons.Default.Memory, contentDescription = "Neural Core", tint = Color(0xFF00E5FF))
             }
             
             IconButton(
                 onClick = { navController.navigate("privacy_vault") },
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
+                modifier = Modifier.size(48.dp).clip(CircleShape)
             ) {
-                Icon(
-                    imageVector = Icons.Default.History,
-                    contentDescription = "History",
-                    tint = Color.White
-                )
+                Icon(Icons.Default.Lock, contentDescription = "Vault", tint = Color.White)
             }
 
             IconButton(
                 onClick = { navController.navigate("settings") },
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
+                modifier = Modifier.size(48.dp).clip(CircleShape)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
-                    tint = Color.White
-                )
+                Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.White)
             }
         }
     }

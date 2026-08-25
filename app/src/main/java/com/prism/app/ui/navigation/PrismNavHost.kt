@@ -30,6 +30,7 @@ fun PrismNavHost(
         composable("code_explainer") { CodeExplainerScreen(onBackClick = { navController.popBackStack() }) }
         composable("architecture_diagram") { ArchitectureDiagramScreen(onBackClick = { navController.popBackStack() }) }
         composable("privacy_vault") { PrivacyVaultScreen(onBackClick = { navController.popBackStack() }) }
+        composable("npu_monitor") { NpuMonitorScreen(onBackClick = { navController.popBackStack() }) }
         composable("settings") { SettingsScreen(navController = navController) }
     }
 }
