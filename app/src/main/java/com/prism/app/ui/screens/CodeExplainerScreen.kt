@@ -1,8 +1,9 @@
 package com.prism.app.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,11 +11,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.random.Random
 
 private val BgBlack = Color(0xFF000000)
 private val CardBg = Color(0xFF111111)
@@ -100,7 +104,7 @@ fun CodeExplainerScreen(onBackClick: () -> Unit = {}) {
                             state = 1
                             coroutineScope.launch {
                                 // Simulate NPU Inference Delay
-                                delay(2500)
+                                delay(3500) // Give them time to admire the animation
                                 
                                 // Dynamic Response Logic
                                 if (codeInput.contains("for") || codeInput.contains("while")) {
@@ -131,19 +135,16 @@ fun CodeExplainerScreen(onBackClick: () -> Unit = {}) {
                     Text("Analyze with NPU", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
             } else if (state == 1) {
-                // Loading State
-                Spacer(modifier = Modifier.height(100.dp))
-                CircularProgressIndicator(color = AccentGreen, modifier = Modifier.size(64.dp), strokeWidth = 6.dp)
-                Spacer(modifier = Modifier.height(24.dp))
-                Text("NPU Analyzing AST...", color = AccentGreen, fontSize = 18.sp, fontWeight = FontWeight.Medium)
-                Text("Running Gemma-3n-E2B locally", color = TextSecondary, fontSize = 14.sp, modifier = Modifier.padding(top = 8.dp))
+                // Loading State (Neural Thinking Animation)
+                Spacer(modifier = Modifier.height(40.dp))
+                NeuralThinkingAnimation(color = AccentGreen)
             } else {
                 // Result State
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
                     color = CardBg,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+                    border = BorderStroke(1.dp, CardBorder)
                 ) {
                     Column(modifier = Modifier.padding(24.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -180,5 +181,96 @@ fun CodeExplainerScreen(onBackClick: () -> Unit = {}) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun NeuralThinkingAnimation(color: Color) {
+    val thoughtSteps = listOf(
+        "Tokenizing input sequence...",
+        "Building Abstract Syntax Tree...",
+        "Tracing variable scopes...",
+        "Inferring Big-O complexity...",
+        "Synthesizing explanation..."
+    )
+    var stepIndex by remember { mutableIntStateOf(0) }
+    
+    LaunchedEffect(Unit) {
+        while (stepIndex < thoughtSteps.size - 1) {
+            delay(700)
+            stepIndex++
+        }
+    }
+
+    val transition = rememberInfiniteTransition(label = "pulse")
+    val alpha by transition.animateFloat(
+        initialValue = 0.2f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "alpha"
+    )
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+        Box(modifier = Modifier.size(200.dp), contentAlignment = Alignment.Center) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val center = Offset(size.width / 2, size.height / 2)
+                val radius = size.width / 2 - 20f
+                
+                val nodes = mutableListOf<Offset>()
+                for (i in 0 until 8) {
+                    val angle = (i * 45).toDouble() * Math.PI / 180
+                    val r = radius * (0.6f + Random.nextFloat() * 0.4f)
+                    val x = center.x + r * cos(angle).toFloat()
+                    val y = center.y + r * sin(angle).toFloat()
+                    nodes.add(Offset(x, y))
+                }
+                nodes.add(center) // central node
+
+                // Draw connections
+                for (i in nodes.indices) {
+                    for (j in i + 1 until nodes.size) {
+                        if (Random.nextFloat() > 0.4f) { // Random sparse connections
+                            val lineAlpha = if (i == stepIndex % nodes.size || j == stepIndex % nodes.size) alpha else 0.1f
+                            drawLine(
+                                color = color.copy(alpha = lineAlpha),
+                                start = nodes[i],
+                                end = nodes[j],
+                                strokeWidth = if (lineAlpha > 0.5f) 4f else 1f
+                            )
+                        }
+                    }
+                }
+
+                // Draw nodes
+                nodes.forEachIndexed { i, node ->
+                    val nodeAlpha = if (i == stepIndex % nodes.size) alpha else 0.3f
+                    val nodeRadius = if (i == stepIndex % nodes.size) 8f else 4f
+                    drawCircle(
+                        color = color.copy(alpha = nodeAlpha),
+                        radius = nodeRadius,
+                        center = node
+                    )
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        Text(
+            text = thoughtSteps[stepIndex],
+            color = color,
+            fontSize = 16.sp,
+            fontFamily = FontFamily.Monospace,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "Running local LLM inference...",
+            color = TextSecondary,
+            fontSize = 12.sp,
+            modifier = Modifier.padding(top = 8.dp)
+        )
     }
 }
