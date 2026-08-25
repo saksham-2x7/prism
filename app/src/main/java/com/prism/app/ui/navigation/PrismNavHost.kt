@@ -32,5 +32,8 @@ fun PrismNavHost(
         composable("privacy_vault") { PrivacyVaultScreen(onBackClick = { navController.popBackStack() }) }
         composable("npu_monitor") { NpuMonitorScreen(onBackClick = { navController.popBackStack() }) }
         composable("settings") { SettingsScreen(navController = navController) }
+        composable("api_gen") { HomeScreen(navController = navController) }
+        composable("ui_debug") { HomeScreen(navController = navController) }
+        composable("local_llm") { HomeScreen(navController = navController) }
     }
 }

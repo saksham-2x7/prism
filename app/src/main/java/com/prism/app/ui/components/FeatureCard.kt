@@ -1,8 +1,5 @@
 package com.prism.app.ui.components
 
-import android.graphics.RenderEffect
-import android.graphics.Shader
-import android.os.Build
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -30,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
@@ -55,9 +51,16 @@ fun GlassCard(
     val shape = RoundedCornerShape(24.dp)
     val borderBrush = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF00E5FF),
+            Color(0xFF00E5FF).copy(alpha = 0.8f),
             Color.Transparent,
-            Color(0xFFBB86FC)
+            Color(0xFFBB86FC).copy(alpha = 0.8f)
+        )
+    )
+    
+    val bgBrush = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFFFFFFF).copy(alpha = 0.08f),
+            Color(0xFFFFFFFF).copy(alpha = 0.03f)
         )
     )
 
@@ -68,7 +71,8 @@ fun GlassCard(
                 scaleY = scale
             }
             .clip(shape)
-            .border(1.dp, borderBrush, shape)
+            .border(1.5.dp, borderBrush, shape)
+            .background(bgBrush)
             .pointerInput(Unit) {
                 while (true) {
                     awaitPointerEventScope {
@@ -85,22 +89,6 @@ fun GlassCard(
                 onClick = onClick
             )
     ) {
-        // Backdrop Blur (Fallback to solid translucent if API < 31)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        renderEffect = RenderEffect.createBlurEffect(
-                            30f,
-                            30f,
-                            Shader.TileMode.DECAL
-                        ).asComposeRenderEffect()
-                    }
-                }
-                .background(Color.White.copy(alpha = 0.05f))
-        )
-        
         Column(
             modifier = Modifier.padding(20.dp),
             horizontalAlignment = Alignment.Start
@@ -112,7 +100,7 @@ fun GlassCard(
                     .background(
                         brush = Brush.radialGradient(
                             colors = listOf(
-                                Color(0xFF00E5FF).copy(alpha = 0.3f),
+                                Color(0xFF00E5FF).copy(alpha = 0.4f),
                                 Color.Transparent
                             )
                         ),
@@ -120,24 +108,25 @@ fun GlassCard(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = icon, fontSize = 24.sp)
+                Text(text = icon, fontSize = 28.sp)
             }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.weight(1f))
             
             Text(
                 text = title,
                 color = Color.White,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.5.sp
             )
             
             Spacer(modifier = Modifier.height(4.dp))
             
             Text(
                 text = subtitle,
-                color = Color(0xFFB0B0B0),
-                fontSize = 14.sp,
+                color = Color(0xFFA0A0A0),
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Medium
             )
         }
