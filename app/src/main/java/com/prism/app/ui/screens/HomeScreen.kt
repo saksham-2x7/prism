@@ -88,10 +88,13 @@ fun HomeScreen(navController: androidx.navigation.NavController) {
 
                 // Grid
                 val features = listOf(
+                    Triple("Sketch to Code", "Camera → Compose", "📸") to "sketch_to_code",
+                    Triple("Voice to Code", "Speak → Working code", "🎙️") to "voice_to_code",
+                    Triple("Bug Reporter", "Screenshot → Report", "🐛") to "bug_reporter",
+                    Triple("Notes to Tasks", "Handwriting → Jira", "📝") to "handwriting_to_tasks",
                     Triple("Code Explainer", "Analyze logic", "🔍") to "code_explainer",
                     Triple("Architecture", "Draw diagram", "🏗️") to "architecture_diagram",
-                    Triple("Voice to Code", "Speak it", "🎙️") to "voice_to_code",
-                    Triple("Privacy Vault", "Zero trust", "🔐") to "privacy_vault"
+                    Triple("Privacy Vault", "Encrypted history", "🔐") to "privacy_vault"
                 )
 
                 LazyVerticalGrid(
