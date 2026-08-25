@@ -30,7 +30,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.History
@@ -231,14 +231,14 @@ fun GlassBottomBar(modifier: Modifier = Modifier, navController: androidx.naviga
             }
             
             IconButton(
-                onClick = { /* Stay on home for tools */ },
+                onClick = { navController.navigate("voice_to_code") },
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Build,
-                    contentDescription = "Tools",
+                    imageVector = Icons.Default.Mic,
+                    contentDescription = "Voice",
                     tint = Color.White
                 )
             }
