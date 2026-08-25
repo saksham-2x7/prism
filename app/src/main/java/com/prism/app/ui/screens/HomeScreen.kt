@@ -32,7 +32,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -124,7 +126,8 @@ fun HomeScreen(navController: androidx.navigation.NavController) {
             GlassBottomBar(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 32.dp)
+                    .padding(bottom = 32.dp),
+                navController = navController
             )
         }
     }
@@ -190,7 +193,7 @@ fun AnimatedMeshBackground() {
 }
 
 @Composable
-fun GlassBottomBar(modifier: Modifier = Modifier) {
+fun GlassBottomBar(modifier: Modifier = Modifier, navController: androidx.navigation.NavController) {
     val shape = RoundedCornerShape(32.dp)
     val borderBrush = Brush.linearGradient(
         colors = listOf(
@@ -202,7 +205,7 @@ fun GlassBottomBar(modifier: Modifier = Modifier) {
 
     Box(
         modifier = modifier
-            .width(240.dp)
+            .width(280.dp)
             .height(64.dp)
             .clip(shape)
             .border(1.dp, borderBrush, shape)
@@ -215,40 +218,53 @@ fun GlassBottomBar(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = { /* TODO */ },
+                onClick = { navController.navigate("home") },
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "Star",
-                    tint = Color.White
+                    imageVector = Icons.Default.Home,
+                    contentDescription = "Home",
+                    tint = Color(0xFF00E5FF)
                 )
             }
             
             IconButton(
-                onClick = { /* TODO */ },
+                onClick = { /* Stay on home for tools */ },
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
             ) {
                 Icon(
                     imageVector = Icons.Default.Build,
-                    contentDescription = "Build",
+                    contentDescription = "Tools",
                     tint = Color.White
                 )
             }
             
             IconButton(
-                onClick = { /* TODO */ },
+                onClick = { navController.navigate("privacy_vault") },
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
             ) {
                 Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "Check",
+                    imageVector = Icons.Default.History,
+                    contentDescription = "History",
+                    tint = Color.White
+                )
+            }
+
+            IconButton(
+                onClick = { navController.navigate("settings") },
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Settings",
                     tint = Color.White
                 )
             }
