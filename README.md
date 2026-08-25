@@ -41,13 +41,13 @@ Neuron turns your phone's unique sensors — **camera, microphone, touchscreen**
 - 🔴 **Red Light**: All 7 features work fully on the phone — camera, mic, touch
 - 🟢 **Green Light**: Import codebases from laptop via iQOO Office Kit
 
-## 👥 Team
+## 👥 Contributors & Core Team
 
-| Name | Role |
-|------|------|
-| Naman Raghav | Android Lead, Debugging |
-| Chezhil | AI/ML, Complex Problem Solving |
-| Saksham | Product, UI/UX, Prompt Engineering |
+| Name | Role | GitHub |
+|------|------|--------|
+| **Naman Raghav** | Android Lead, Debugging | [@NAMAN121208](https://github.com/NAMAN121208) |
+| **Chezhil** | AI/ML, Complex Problem Solving | [@chezhil](https://github.com/chezhil) |
+| **Saksham** | Product, UI/UX, Prompt Engineering | [@saksham-2x7](https://github.com/saksham-2x7) |
 
 ## 📂 Project Structure
 
