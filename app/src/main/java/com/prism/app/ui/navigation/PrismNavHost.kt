@@ -13,13 +13,14 @@ fun PrismNavHost(
     navController: NavHostController,
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
-    startDestination: String = "login"
+    startDestination: String = "onboarding"
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = Modifier.fillMaxSize()
     ) {
+        composable("onboarding") { OnboardingScreen(navController = navController) }
         composable("login") { LoginScreen(navController = navController) }
         composable("home") { HomeScreen(navController = navController) }
         composable("sketch_to_code") { SketchToCodeScreen(onBackClick = { navController.popBackStack() }) }
